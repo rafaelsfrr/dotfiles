@@ -104,7 +104,7 @@ set $ws5    "5 "
 set $ws6    "6 "
 set $ws7    "7 "
 set $ws8    "8 "
-set $ws9    "9 "
+set $ws9    "9 "
 
 # switch to workspace
 bindsym $mod+comma      workspace prev
@@ -178,6 +178,7 @@ bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 ## Workspaces ##
 assign [class="^Firefox$" instance="^Navigator$"] $ws1
 assign [class="^chromium$" instance="^chromium$"] $ws1
+assign [class="^Dwb$" instance="^dwb$"] $ws1
 assign [class="^google-chrome$" instance="^google-chrome$"] $ws2
 assign [class="^Foxit Reader$" instance="^FoxitReader$"] $ws3
 assign [class="^Emacs$" instance="^emacs$"] $ws3
@@ -187,6 +188,7 @@ assign [class="^Emelfm2$" instance="^emelfm2$"] $ws5
 assign [class="^Gimp-2.8$" instance="^gimp-2.8$"] $ws6
 assign [class="^Inkscape$" instance="^inkscape$"] $ws6
 assign [class="^Skype$" instance="^skype$"] $ws7
+assign [class="^Claws-mail$" instance="^claws-mail$"] $ws8
 
 
 ## Modes ##
@@ -273,7 +275,6 @@ bar {
     strip_workspace_numbers no
   position top
     status_command ~/.i3/i3barwraper.sh
-    #status_command i3status |  ~/.i3/i3statusWraper.py
     tray_output eDP1
     separator_symbol " "
   font pango:Fira Mono 10.5
