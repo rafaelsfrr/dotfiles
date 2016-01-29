@@ -1,0 +1,2 @@
+#!/bin/sh
+feh  --bg-scale '/home/tmachr/Images/arch_wallpaper.jpg' 

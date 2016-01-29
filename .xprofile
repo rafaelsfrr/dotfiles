@@ -1,0 +1,8 @@
+# Set wallpaper
+feh --bg-scale  ~/Images/arch_wallpaper.jpg
+
+# Start Mopidy
+systemctl --user start mopidy
+
+# Start fetchmail deamon mode
+fetchmail -s -d 900
