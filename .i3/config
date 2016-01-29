@@ -104,7 +104,7 @@ set $ws5    "5 "
 set $ws6    "6 "
 set $ws7    "7 "
 set $ws8    "8 "
-set $ws9    "9 "
+set $ws9    "9 "
 
 # switch to workspace
 bindsym $mod+comma      workspace prev
@@ -188,7 +188,6 @@ assign [class="^Emelfm2$" instance="^emelfm2$"] $ws5
 assign [class="^Gimp-2.8$" instance="^gimp-2.8$"] $ws6
 assign [class="^Inkscape$" instance="^inkscape$"] $ws6
 assign [class="^Skype$" instance="^skype$"] $ws7
-assign [class="^Claws-mail$" instance="^claws-mail$"] $ws8
 
 
 ## Modes ##
