@@ -1,0 +1,1 @@
+/home/rafaelsfrr/.emacs.d/straight/repos/queue/queue.el
