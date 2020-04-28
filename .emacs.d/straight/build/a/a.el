@@ -1,1 +1,0 @@
-/home/rafaelsfrr/.emacs.d/straight/repos/a.el/a.el

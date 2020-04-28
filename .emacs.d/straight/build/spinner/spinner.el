@@ -1,1 +1,0 @@
-/home/rafaelsfrr/.emacs.d/straight/repos/spinner/spinner.el

@@ -1,1 +1,0 @@
-/home/rafaelsfrr/.emacs.d/straight/repos/flycheck-clj-kondo/flycheck-clj-kondo.el

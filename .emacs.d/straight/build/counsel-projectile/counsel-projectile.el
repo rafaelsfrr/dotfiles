@@ -1,1 +1,0 @@
-/home/rafaelsfrr/.emacs.d/straight/repos/counsel-projectile/counsel-projectile.el

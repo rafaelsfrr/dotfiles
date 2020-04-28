@@ -1,1 +1,0 @@
-/home/rafaelsfrr/.emacs.d/straight/repos/ace-window/ace-window.el
