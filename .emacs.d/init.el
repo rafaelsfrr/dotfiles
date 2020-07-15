@@ -1,5 +1,4 @@
 ; Path
-
 (add-to-list 'load-path "~/.emacs.d/powerline")
 (add-to-list 'load-path "~/.emacs.d/undo-tree")
 
@@ -14,6 +13,15 @@
 ;; Disable menu bar and tool bar
 (menu-bar-mode -1)
 (tool-bar-mode -1)
+
+; Backup files
+(setq backup-directory-alist '(("." . "/tmp"))
+  backup-by-copying t    ; Don't delink hardlinks
+  version-control t      ; Use version numbers on backups
+  delete-old-versions t  ; Automatically delete excess backups
+  kept-new-versions 20   ; how many of the newest versions to keep
+  kept-old-versions 5    ; and how many of the old
+  )
 
 ;; Reduce the lag
 (setq auto-window-vscroll nil)
@@ -30,12 +38,12 @@
 (global-set-key (kbd "C-c l") 'org-store-link)
 (global-set-key (kbd "C-c a") 'org-agenda)
 (global-set-key (kbd "C-c c") 'org-capture)
+
 ; Wind move
 (when (fboundp 'windmove-default-keybindings)
 (windmove-default-keybindings))
 
 ; Straight
-
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -65,9 +73,15 @@
 (straight-use-package 'move-text)
 (straight-use-package 'all-the-icons)
 (straight-use-package 'emojify)
+(straight-use-package 'haskell-mode)
+(straight-use-package 'elpy)
+(straight-use-package 'yaml-mode)
+(straight-use-package 'terraform-mode)
+(straight-use-package 'company-terraform)
+(straight-use-package 'org-gcal)
+(straight-use-package 'org-journal)
 
 ;;; Doom-themes
-
 (use-package doom-themes
   :config
   ;; Global settings (defaults)
@@ -151,12 +165,6 @@
 ;;; Lispy
 (require 'lispy)
 (setq lispy-compat '(edebug cider magit-blame-mode))
-;(add-hook 'emacs-lisp-mode-hook (lambda () (lispy-mode 1)))
-
-;(defun conditionally-enable-lispy ()
-;  (when (eq this-command 'eval-expression)
-;    (lispy-mode 1)))
-;(add-hook 'minibuffer-setup-hook 'conditionally-enable-lispy)
 
 ;; clj-kondo
 (require 'flycheck-clj-kondo)
@@ -172,6 +180,47 @@
 ;; Move-text
 (require 'move-text)
 (move-text-default-bindings)
+
+;; elpy
+(setq python-shell-interpreter "python3"
+      python-shell-interpreter-args "-i")
+
+;; Org mode
+(setq org-todo-keywords
+      '((sequence "TODO(a@/!)" "DOING(b@/!)" "REVIEW(c@/!)" "TEST(d@/!)" "|" "CANCELED(e@/!)" "DONE(f@/!)")
+	(sequence "TODO(g@)" "DOING(h@)" "|" "CANCELED(i@)" "DONE(j@)")))
+
+(defun my-org-mode-hook ()
+  (company-mode)
+  (add-hook 'completion-at-point-functions 'pcomplete-completions-at-point nil t))
+
+;; gcal
+(require 'org-gcal)
+(setq org-gcal-client-id (substitute-in-file-name "$GOOGLE_CLIENT_ID")
+      org-gcal-client-secret (substitute-in-file-name "$GOOGLE_CLIENT_SECRET")
+      org-gcal-file-alist '(("rafael.sobfer@gmail.com" .  "~/Dropbox/org/gcal.org")))
+
+(setq org-export-exclude-category (list "gcal"))
+
+;; org-journal
+(require 'org-journal)
+(setq org-journal-dir "~/Dropbox/org/journal")
+
+;; org-capture
+(setq org-default-notes-file (concat org-directory "~/Dropbox/org/notes.org"))
+(setq org-capture-templates
+      '(("t" "General Todo" entry (file+headline "~/Dropbox/org/todo.org" "Tasks")
+         "** TODO %? \nSCHEDULED: <%(org-read-date nil nil)>")
+	("c" "Project Casa: Todo" entry (file+olp "~/Dropbox/org/todo.org" "Projects" "Casa")
+	 "*** TODO %? \nSCHEDULED: <%(org-read-date nil nil)>")
+	("w" "Project Trabalho: Todo" entry (file+olp "~/Dropbox/org/todo.org" "Projects" "Trabalho")
+	 "*** TODO %? \nSCHEDULED: <%(org-read-date nil nil)>")
+	("i" "Inbox" entry (file+headline "~/Dropbox/org/todo.org" "Inbox")
+	 "** %?")
+	("r" "Daily review" checkitem (file+headline "~/Dropbox/org/dailyreview.org" "Daily Review")
+         "%U \n[ ] Sync gcal \n[ ] Review de tarefas do dia anterior \n[ ] Reschedule de tarefas do dia anterior \n[ ] Priorização de tarefas do dia \n[ ] Processamento do inbox \n[ ] Review de tarefas \n[ ] Journal do dia anterior %?")
+        ("j" "Journal" entry (file+datetree "~/Dropbox/org/journal.org")
+         "* %?\nEntered on %U\n  %i\n")))
 
 ; Hooks
 (add-hook 'clojure-mode-hook
@@ -199,7 +248,7 @@
 	    (company-mode)
 	    (add-hook 'after-save-hook
 		      (lambda ()
-	    		(when (string= (file-name-extension buffer-file-name) "clj")
+	    		(when (string= (file-name-extension buffer-file-name) "cljs")
 			  (cider-load-buffer))))))
 
 (add-hook 'cider-repl-mode-hook
@@ -207,11 +256,32 @@
 	    (company-mode)
 	    (lispy-mode)))
 
+(add-hook 'python-mode-hook
+	  (lambda ()
+	    (company-mode)
+	    (elpy-mode)))
+
+(add-hook 'emacs-lisp-mode-hook
+	  (lambda ()
+	    (lispy-mode)))
+
+(add-hook 'org-mode-hook #'my-org-mode-hook)
+
+(add-hook 'org-agenda-mode-hook (lambda ()
+				  (org-gcal-sync)
+				  (org-icalendar-combine-agenda-files)))
+(add-hook 'org-capture-after-finalize-hook (lambda ()
+					     (org-gcal-sync)
+					     (org-icalendar-combine-agenda-files)))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-agenda-files
+   (quote
+    ("~/Dropbox/org/todo.org" "~/Dropbox/org/gcal.org" "~/Dropbox/org/dailyreview.org")))
  '(safe-local-variable-values
    (quote
     ((eval setq flycheck-clj-kondo-edn-executable
