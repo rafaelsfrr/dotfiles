@@ -80,6 +80,7 @@
 (straight-use-package 'company-terraform)
 (straight-use-package 'org-gcal)
 (straight-use-package 'org-journal)
+(straight-use-package 'olivetti)
 
 ;;; Doom-themes
 (use-package doom-themes
@@ -190,9 +191,15 @@
       '((sequence "TODO(a@/!)" "DOING(b@/!)" "REVIEW(c@/!)" "TEST(d@/!)" "|" "CANCELED(e@/!)" "DONE(f@/!)")
 	(sequence "TODO(g@)" "DOING(h@)" "|" "CANCELED(i@)" "DONE(j@)")))
 
-(defun my-org-mode-hook ()
-  (company-mode)
-  (add-hook 'completion-at-point-functions 'pcomplete-completions-at-point nil t))
+(setq org-indent-indentation-per-level 1)
+(setq org-adapt-indentation nil)
+(setq org-hide-leading-starts 't)
+(setq org-hide-emphasis-markers t)
+(customize-set-variable 'org-blank-before-new-entry 
+                        '((heading . nil)
+                          (plain-list-item . nil)))
+(setq org-cycle-separator-lines 1)
+
 
 ;; gcal
 (require 'org-gcal)
@@ -200,11 +207,10 @@
       org-gcal-client-secret (substitute-in-file-name "$GOOGLE_CLIENT_SECRET")
       org-gcal-file-alist '(("rafael.sobfer@gmail.com" .  "~/Dropbox/org/gcal.org")))
 
-(setq org-export-exclude-category (list "gcal"))
-
 ;; org-journal
 (require 'org-journal)
 (setq org-journal-dir "~/Dropbox/org/journal")
+
 
 ;; org-capture
 (setq org-default-notes-file (concat org-directory "~/Dropbox/org/notes.org"))
@@ -265,14 +271,16 @@
 	  (lambda ()
 	    (lispy-mode)))
 
-(add-hook 'org-mode-hook #'my-org-mode-hook)
+(add-hook 'org-mode-hook
+	  (lambda ()
+	    (company-mode)
+	    (olivetti-mode)
+	    (add-hook 'completion-at-point-functions 'pcomplete-completions-at-point nil t)))
 
 (add-hook 'org-agenda-mode-hook (lambda ()
-				  (org-gcal-sync)
-				  (org-icalendar-combine-agenda-files)))
+				  (org-gcal-sync)))
 (add-hook 'org-capture-after-finalize-hook (lambda ()
-					     (org-gcal-sync)
-					     (org-icalendar-combine-agenda-files)))
+					     (org-gcal-sync)))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
